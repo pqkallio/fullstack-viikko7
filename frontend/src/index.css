@@ -1,0 +1,40 @@
+.notification {
+    font-size: 10px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.hiddenNotification {
+    visibility: hidden;
+}
+
+.error {
+    color: red;
+    background: lightgrey;
+}
+
+.confirmation {
+    color: lightgrey;
+    background: darkgreen;
+}
+
+.blog {
+    border: solid;
+    border-width: 1px;
+    margin-bottom: 5px;
+}
+
+.blogHeader {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.blogInfo {
+    border: none;
+    cursor: default;
+    font-weight: normal;
+    padding-top: 10px;
+    padding-left: 10px;
+}
