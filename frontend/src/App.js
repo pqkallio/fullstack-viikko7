@@ -7,6 +7,8 @@ import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogHelpers from './utils/BlogHelpers'
+import { notificate } from './reducers/notificationReducer'
+import { connect } from 'react-redux'
 import './index.css'
 
 const LOCALSTORAGE_USER_KEY = 'loggedBlogappUser'
@@ -18,9 +20,7 @@ class App extends React.Component {
       blogs: [],
       user: null,
       username: '',
-      password: '',
-      notificationType: null,
-      notification: ''
+      password: ''
     }
   }
 
@@ -47,7 +47,7 @@ class App extends React.Component {
       this.setState({ blogs })
     } catch (exception) {
       console.log(exception)
-      this.notify('error', 'unable to retrieve blogs at the time, please try again')
+      this.props.notificate('error', 'unable to retrieve blogs at the time, please try again')
 
       this.setState({ blogs: [] })
     }
@@ -55,20 +55,6 @@ class App extends React.Component {
 
   handleLoginFieldChange = event => {
     this.setState({ [event.target.name]: event.target.value })
-  }
-
-  notify = (type, message) => {
-    this.setState({
-      notificationType: type,
-      notification: message
-    })
-
-    setTimeout(() => {
-      this.setState({
-        notificationType: null,
-        notification: ''
-      })
-    }, 2500)
   }
 
   handleLogin = async (event) => {
@@ -81,7 +67,6 @@ class App extends React.Component {
       })
 
       window.localStorage.setItem(LOCALSTORAGE_USER_KEY, JSON.stringify(user))
-
       this.setState({
         username: '',
         password: '',
@@ -89,12 +74,11 @@ class App extends React.Component {
       })
 
       blogService.setToken(user.token)
-
       this.setBlogs()
-
-      this.notify('confirmation', `logged in as ${user.username}`)
+      this.props.notificate('confirmation', `logged in as ${user.username}`)
     } catch (exception) {
-      this.notify('error', 'username or password invalid')
+      console.log(exception)
+      this.props.notificate('error', 'username or password invalid')
     }
   }
 
@@ -104,7 +88,7 @@ class App extends React.Component {
     window.localStorage.removeItem(LOCALSTORAGE_USER_KEY)
     this.setState({ user: null, blogs: [] })
 
-    this.notify('confirmation', 'successfully logged out')
+    this.props.notificate('confirmation', 'successfully logged out')
   }
 
   handleBlogCreation = (newBlog) => {
@@ -115,11 +99,11 @@ class App extends React.Component {
       blogs
     })
 
-    this.notify('confirmation', `a new blog '${newBlog.title}' by ${newBlog.author} added`)
+    this.props.notificate('confirmation', `a new blog '${newBlog.title}' by ${newBlog.author} added`)
   }
 
   handleException = (exception, message) => {
-    this.notify('error', message)
+    this.props.notificate('error', message)
   }
 
   handleLike = (likedBlog) => {
@@ -140,7 +124,7 @@ class App extends React.Component {
       blogs
     })
 
-    this.notify('confirmation', `${BlogHelpers.formatBlogToString(blog)} deleted`)
+    this.props.notificate('confirmation', `${BlogHelpers.formatBlogToString(blog)} deleted`)
   }
 
   render() {
@@ -148,10 +132,7 @@ class App extends React.Component {
       return (
         <div>
           <h1>Blogs Blogs Blogs</h1>
-          <Notification
-            type={this.state.notificationType}
-            notification={this.state.notification}
-          />
+          <Notification />
           <Togglable
             type='button'
             toggleLabel='log in'
@@ -171,10 +152,7 @@ class App extends React.Component {
     return (
       <div>
         <h1>Blogs Blogs Blogs</h1>
-        <Notification
-          type={this.state.notificationType}
-          notification={this.state.notification}
-        />
+        <Notification />
         <h2>blogs</h2>
         <p>{this.state.user.name} logged in <button onClick={this.handleLogout}>logout</button></p>
         <NewBlogForm
@@ -197,4 +175,8 @@ class App extends React.Component {
   }
 }
 
-export default App;
+const mapDispatchToProps = {
+  notificate
+}
+
+export default connect(null, mapDispatchToProps)(App);

@@ -1,8 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
-const Notification = ({ type, notification }) => {
-    if (!type) {
+const Notification = ({ notification }) => {
+    if (!notification.notificationType) {
         return (
             <div className='notification hiddenNotification'>
                 .
@@ -11,15 +11,16 @@ const Notification = ({ type, notification }) => {
     }
 
     return (
-        <div className={'notification ' + type}>
-            {notification}    
+        <div className={'notification ' + notification.notificationType}>
+            {notification.notification}
         </div>
     );
 };
 
-Notification.propTypes = {
-    type: PropTypes.string,
-    notification: PropTypes.string
+const mapStateToProps = (state) => {
+    return {
+        notification: state.notification
+    }
 }
 
-export default Notification;
+export default connect(mapStateToProps, null)(Notification);
