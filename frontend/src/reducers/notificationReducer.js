@@ -1,7 +1,4 @@
-const actionTypes = {
-    SET_NOTIFICATION: 'SET_NOTIFICATION',
-    REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION'
-}
+import actionTypes from './actionTypes'
 
 export const notificate = (notificationType, notification) => {
     return async (dispatch) => {

@@ -1,5 +1,5 @@
 import React from 'react'
-import { mount, shallow } from 'enzyme'
+import { mount } from 'enzyme'
 import Blog from './Blog'
 
 describe('<Blog />', () => {
@@ -54,12 +54,12 @@ describe('<Blog />', () => {
         const togglable = blogComponent.find('Togglable')
         const labelDiv = togglable.find('.toggleLabel')
         let togglableDiv = togglable.find('.togglableContent')
-        
+
         expect(togglableDiv.html()).toContain('style="display: none;"')
 
         labelDiv.simulate('click')
         togglableDiv = togglable.find('.togglableContent')
-        
+
         expect(togglableDiv.html()).toContain('style=""')
     })
 })

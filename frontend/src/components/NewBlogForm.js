@@ -1,16 +1,12 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
+import { notificate } from '../reducers/notificationReducer'
+import { createBlog } from '../reducers/blogReducer'
+import { connect } from 'react-redux'
 
 class NewBlogForm extends Component {
-    static propTypes = {
-        blogService: PropTypes.object.isRequired,
-        blogCreationCallback: PropTypes.func.isRequired,
-        errorCallback: PropTypes.func.isRequired
-    }
-    
-    constructor(props) {
-        super(props)
-        
+    constructor() {
+        super()
+
         this.state = {
             title: '',
             author: '',
@@ -28,18 +24,18 @@ class NewBlogForm extends Component {
                 author: this.state.author,
                 url: this.state.url
             }
-    
-            const response = await this.props.blogService.create(blog)
-            this.props.blogCreationCallback(response)
-    
+
+            this.props.createBlog(blog)
+            this.props.notificate('confirmation', `a new blog '${blog.title}' by ${blog.author} added`)
+
             this.setState({
                 title: '',
-                author: '', 
+                author: '',
                 url: '',
                 submittingEnabled: false
             })
         } catch (exception) {
-            this.props.errorCallback(exception, 'unable to save new blog at the time, please try again')
+            this.props.notificate('error', 'unable to save new blog at the time, please try again')
         }
     }
 
@@ -50,13 +46,13 @@ class NewBlogForm extends Component {
         })
 
         this.setState({
-            submittingEnabled: 
-                this.state.title.length > 0 && 
-                this.state.author.length > 0 && 
+            submittingEnabled:
+                this.state.title.length > 0 &&
+                this.state.author.length > 0 &&
                 this.state.url.length > 0
         })
     }
-    
+
     render() {
         return (
             <div>
@@ -68,33 +64,33 @@ class NewBlogForm extends Component {
                             <tr>
                                 <td>title</td>
                                 <td>
-                                    <input 
+                                    <input
                                         type='text'
                                         name='title'
                                         value={this.state.title}
-                                        onChange={this.handleFormFieldChange} 
+                                        onChange={this.handleFormFieldChange}
                                     />
                                 </td>
                             </tr>
                             <tr>
                                 <td>author</td>
                                 <td>
-                                    <input 
+                                    <input
                                         type='text'
                                         name='author'
                                         value={this.state.author}
-                                        onChange={this.handleFormFieldChange} 
+                                        onChange={this.handleFormFieldChange}
                                     />
                                 </td>
                             </tr>
                             <tr>
                                 <td>url</td>
                                 <td>
-                                    <input 
+                                    <input
                                         type='text'
                                         name='url'
                                         value={this.state.url}
-                                        onChange={this.handleFormFieldChange} 
+                                        onChange={this.handleFormFieldChange}
                                     />
                                 </td>
                             </tr>
@@ -107,4 +103,9 @@ class NewBlogForm extends Component {
     }
 }
 
-export default NewBlogForm;
+const mapDispatchToProps = {
+    notificate,
+    createBlog
+}
+
+export default connect(null, mapDispatchToProps)(NewBlogForm);

@@ -1,64 +1,70 @@
 import React from 'react'
 import Togglable from './Togglable'
-import blogs from '../services/blogs'
 import BlogHelpers from '../utils/BlogHelpers'
 import PropTypes from 'prop-types'
+import { likeBlog, deleteBlog } from '../reducers/blogReducer'
+import { notificate } from '../reducers/notificationReducer'
+import { connect } from 'react-redux'
 
-class Blog extends React.Component {
-  static propTypes = {
-    blog: PropTypes.object.isRequired,
-    onUpdate: PropTypes.func.isRequired,
-    onException: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    username: PropTypes.string.isRequired
+const Blog = ({ user, likeBlog, deleteBlog, notificate, blog }) => {
+  const formatBlog = () => {
+    return BlogHelpers.formatBlogToString(blog)
   }
 
-  formatBlog() {
-    return BlogHelpers.formatBlogToString(this.props.blog)
-  }
-
-  handleLike = async () => {
+  const handleLike = async () => {
     try {
-      const response = await blogs.like(this.props.blog)
-      this.props.onUpdate(response)
+      likeBlog(blog)
+      notificate('confirmation', `you liked blog ${formatBlog()}.`)
     } catch (exception) {
       console.log(exception)
-      this.props.onException(exception, `unable to like blog ${this.formatBlog()}, please try again.`)
+      notificate('error', `unable to like blog ${formatBlog()}, please try again.`)
     }
   }
 
-  handleDelete = async () => {
+  const handleDelete = async () => {
     try {
-      if (window.confirm(`delete ${this.formatBlog()}?`)) {
-        await blogs.deleteBlog(this.props.blog)
-        this.props.onDelete(this.props.blog)
+      if (window.confirm(`delete ${formatBlog()}?`)) {
+        deleteBlog(blog)
+        notificate('confirmation', `${BlogHelpers.formatBlogToString(blog)} deleted`)
       }
     } catch (exception) {
       console.log(exception)
-      this.props.onException(exception, `unable to delete blog ${this.formatBlog()}, please try again`)
+      notificate('error', `unable to delete blog ${formatBlog()}, please try again`)
     }
   }
 
-  render() {
-    const blog = this.props.blog
+  return (
+    <Togglable
+      className='blog blogHeader'
+      type='div'
+      toggleLabel={blog.author + ': ' + blog.title}
+    >
+      <p className='blog blogInfo'><a href={blog.url}>{blog.url}</a><br />
+        {blog.likes} {blog.likes === 1 ? 'like' : 'likes'} <button onClick={handleLike}>like</button><br />
+        added by {blog.user.name}<br />
+        {!blog.user || blog.user.username === user.username ?
+          <button onClick={handleDelete}>delete</button> :
+          null
+        }
+      </p>
+    </Togglable>
+  )
+}
 
-    return (
-      <Togglable
-        className='blog blogHeader'
-        type='div'
-        toggleLabel={blog.author + ': ' + blog.title}
-      >
-        <p className='blog blogInfo'><a href={blog.url}>{blog.url}</a><br/>
-          {blog.likes} {blog.likes === 1 ? 'like' : 'likes'} <button onClick={this.handleLike}>like</button><br/>
-          added by {blog.user.name}<br/>
-          {!blog.user || blog.user.username === this.props.username ?
-            <button onClick={this.handleDelete}>delete</button> :
-            null
-          }
-        </p>
-      </Togglable>
-    )
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
   }
 }
 
-export default Blog
+const mapDispatchToProps = {
+  likeBlog,
+  deleteBlog,
+  notificate
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Blog)

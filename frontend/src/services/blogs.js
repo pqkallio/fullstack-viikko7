@@ -13,7 +13,7 @@ const config = () => {
 
 const getAll = async () => {
   const response = await axios.get(baseUrl)
-  
+
   return response.data
 }
 
@@ -39,14 +39,14 @@ const like = async (blog) => {
   }
 
   const response = await update(blog.id, updatedBlog)
-  
+
   return response.data
 }
 
 const deleteBlog = async (blog) => {
-    const response = await axios.delete(`${baseUrl}/${blog.id}`, config())
-    
-    return response.data
+  const response = await axios.delete(`${baseUrl}/${blog.id}`, config())
+
+  return response.data
 }
 
 export default { getAll, setToken, create, like, deleteBlog }

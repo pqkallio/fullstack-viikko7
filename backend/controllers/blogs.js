@@ -4,7 +4,7 @@ const User = require('../models/user')
 const jwt = require('jsonwebtoken')
 const secret = require('../config').secret
 
-blogsRouter.get('/', async (request, response) => {
+blogsRouter.get('/', async (_, response) => {
     try {
         const blogs = await Blog
             .find({})
@@ -29,10 +29,10 @@ blogsRouter.post('/', async (request, response) => {
         if (!decodedToken.id) {
             return response.status(401).json({ error: 'Token invalid' })
         }
-        
-        const user = await User.findById(decodedToken.id) 
+
+        const user = await User.findById(decodedToken.id)
         const blog = new Blog({ ...request.body, user: user._id })
-        
+
         if (!blog.title) {
             return response.status(400).json({ error: 'title missing' })
         }
@@ -44,11 +44,11 @@ blogsRouter.post('/', async (request, response) => {
         if (!blog.likes) {
             blog.likes = 0
         }
-        
+
         await blog.save()
         user.blogs = user.blogs.concat(blog._id)
         await user.save()
-        
+
         const savedBlog = await Blog.findById(blog._id).populate('user', { username: 1, name: 1 })
         const formattedBlog = Blog.format(savedBlog)
 
@@ -74,8 +74,10 @@ blogsRouter.put('/:id', async (request, response) => {
             url: body.url
         }
 
-        const updatedNote = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-        response.json(updatedNote)
+        const updatedBlog = await Blog
+            .findByIdAndUpdate(request.params.id, blog, { new: true })
+            .populate('user', { username: 1, name: 1 })
+        response.json(Blog.format(updatedBlog))
     } catch (exception) {
         console.log(exception)
         response.status(400).json({ error: 'malformed id' })
@@ -85,7 +87,7 @@ blogsRouter.put('/:id', async (request, response) => {
 blogsRouter.delete('/:id', async (request, response) => {
     try {
         const token = request.token
-        
+
         if (!token) {
             return response.status(401).json({ error: 'Token missing' })
         }
