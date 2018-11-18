@@ -1,5 +1,7 @@
 import actionTypes from './actionTypes'
-import blogService from '../services/blogs'
+import BlogService from '../services/blogs'
+
+const blogService = new BlogService()
 
 export const retrieveBlogs = () => {
     return async (dispatch) => {
@@ -23,7 +25,7 @@ export const likeBlog = (blog) => {
 
 export const deleteBlog = (blog) => {
     return async (dispatch) => {
-        await blogService.deleteBlog(blog)
+        await blogService.deleteObj(blog)
         dispatch({
             type: actionTypes.DELETE_BLOG,
             blog
@@ -65,14 +67,13 @@ const blogReducer = (state = [], action) => {
             return []
         case actionTypes.SET_TOKEN:
             blogService.setToken(action.token)
-            break
+            return state
         case actionTypes.UNSET_TOKEN:
             blogService.setToken(null)
-            break
+            return state
         default:
+            return state
     }
-
-    return state
 }
 
 export default blogReducer

@@ -2,6 +2,12 @@ import loginService from '../services/login'
 import actionTypes from './actionTypes'
 
 const LOCALSTORAGE_USER_KEY = 'loggedBlogappUser'
+const logoutActions = [
+    actionTypes.UNSET_TOKEN,
+    actionTypes.PURGE_BLOGS,
+    actionTypes.PURGE_USERS,
+    actionTypes.LOGOUT
+]
 
 export const login = (username, password) => {
     return async (dispatch) => {
@@ -20,15 +26,7 @@ export const login = (username, password) => {
 
 export const logout = () => {
     return async (dispatch) => {
-        dispatch({
-            type: actionTypes.UNSET_TOKEN
-        })
-        dispatch({
-            type: actionTypes.PURGE_BLOGS
-        })
-        dispatch({
-            type: actionTypes.LOGOUT
-        })
+        logoutActions.forEach(a => dispatch({ type: a }))
         window.localStorage.removeItem(LOCALSTORAGE_USER_KEY)
     }
 }

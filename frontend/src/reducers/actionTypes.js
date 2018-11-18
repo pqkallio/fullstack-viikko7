@@ -18,10 +18,21 @@ const notificationActions = {
     REMOVE_NOTIFICATION: 'REMOVE_NOTIFICATION'
 }
 
+const userActions = {
+    RETRIEVE_USERS: 'RETRIEVE_USERS',
+    PURGE_USERS: 'PURGE_USERS'
+}
+
+const controlActions = {
+    INIT_STORE: 'INIT_STORE'
+}
+
 const actions = {
     ...sessionActions,
     ...blogActions,
-    ...notificationActions
+    ...notificationActions,
+    ...userActions,
+    ...controlActions
 }
 
 export default actions;
