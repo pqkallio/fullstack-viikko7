@@ -85,7 +85,7 @@ class App extends React.Component {
     this.props.notificate('error', message)
   }
 
-  userById = (id) => this.props.users.find(u => u.id === id)
+  resourceById = (rGroup, rid) => this.props[rGroup].find(r => r.id === rid)
 
   loginSection = () => (
     <div>
@@ -104,8 +104,10 @@ class App extends React.Component {
     </div>
   )
 
-  currentUserSection = () => (
+  navigation = () => (
     <div>
+      <Link to={'/'}>blogs</Link> &nbsp;
+      <Link to={'/users'}>users</Link> &nbsp;
       {this.props.user.name} logged in <button onClick={this.handleLogout}>logout</button>
     </div>
   )
@@ -114,12 +116,17 @@ class App extends React.Component {
     <div>
       <h2>blogs</h2>
       <NewBlogForm />
-      {this.props.blogs.sort(BlogHelpers.sort).map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-        />
-      )}
+      <table>
+        <thead>
+        </thead>
+        <tbody>
+          {this.props.blogs.sort(BlogHelpers.sort).map(blog =>
+            <tr key={blog.id}>
+              <td><Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link></td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
   )
 
@@ -153,15 +160,28 @@ class App extends React.Component {
             <h1>Blogs Blogs Blogs</h1>
             <Notification />
             {!this.props.user && this.loginSection()}
-            {this.props.user && this.currentUserSection()}
+            {this.props.user && this.navigation()}
             {this.props.user && <Route exact path="/" render={() => this.blogSection()} />}
             {this.props.user && <Route exact path="/users" render={() => this.userSection()} />}
             {this.props.user &&
-              <Route exact path="/users/:id" render={({ match }) => {
-                window.localStorage.setItem('userId', match.params.id)
-                return <User user={this.userById(match.params.id)} />
-              }
-              } />
+              <Route exact
+                path="/users/:id"
+                render={({ match }) =>
+                  <User
+                    user={this.resourceById('users', match.params.id)}
+                  />
+                }
+              />
+            }
+            {this.props.user &&
+              <Route exact
+                path="/blogs/:id"
+                render={({ match }) =>
+                  <Blog
+                    blog={this.resourceById('blogs', match.params.id)}
+                  />
+                }
+              />
             }
           </div>
         </Router>

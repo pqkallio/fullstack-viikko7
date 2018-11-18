@@ -3,10 +3,6 @@ import { connect } from 'react-redux'
 import { initStore } from '../reducers/controlReducer'
 
 class User extends Component {
-    constructor(props) {
-        super(props)
-    }
-
     async componentWillMount() {
         if (this.props.storeIsInitialized) {
             await this.props.initStore()
@@ -21,7 +17,7 @@ class User extends Component {
                     <h3>Added blogs</h3>
                     <ul>
                         {this.props.user.blogs.map(b =>
-                            <li>{b.author}: {b.title}</li>
+                            <li key={b._id}>{b.author}: {b.title}</li>
                         )}
                     </ul>
                 </div>
