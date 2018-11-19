@@ -1,3 +1,4 @@
+import { Button, Form, List, ListItem } from 'semantic-ui-react'
 import React from 'react'
 import BlogHelpers from '../utils/BlogHelpers'
 import { likeBlog, deleteBlog, commentBlog } from '../reducers/blogReducer'
@@ -21,7 +22,7 @@ class Blog extends React.Component {
   async handleLike() {
     try {
       await this.props.likeBlog(this.props.blog)
-      this.props.notificate('confirmation', `you liked blog ${this.formatBlog()}.`)
+      this.props.notificate('positive', `you liked blog ${this.formatBlog()}.`)
     } catch (exception) {
       console.log(exception)
       this.props.notificate('error', `unable to like blog ${this.formatBlog()}, please try again.`)
@@ -33,7 +34,7 @@ class Blog extends React.Component {
       if (window.confirm(`delete ${this.formatBlog()}?`)) {
         this.props.deleteBlog(this.props.blog)
         this.props.history.push('/')
-        this.props.notificate('confirmation', `${this.formatBlog()} deleted`)
+        this.props.notificate('positive', `${this.formatBlog()} deleted`)
       }
     } catch (exception) {
       console.log(exception)
@@ -49,7 +50,7 @@ class Blog extends React.Component {
     event.preventDefault()
     try {
       await this.props.commentBlog(this.props.blog, this.state.comment)
-      this.props.notificate('confirmation', `comment '${this.state.comment}' added to blog '${this.props.blog.title}'`)
+      this.props.notificate('positive', `comment '${this.state.comment}' added to blog '${this.props.blog.title}'`)
       this.setState({ comment: '' })
     } catch (exception) {
       this.props.notificate('error', 'error commenting on blog, please try again')
@@ -61,24 +62,36 @@ class Blog extends React.Component {
       return (
         <div>
           <h2>{this.props.blog.author + ': ' + this.props.blog.title}</h2>
-          <p className='blog blogInfo'><a href={this.props.blog.url}>{this.props.blog.url}</a><br />
-            {this.props.blog.likes} {this.props.blog.likes === 1 ? 'like' : 'likes'} <button onClick={this.handleLike.bind(this)}>like</button><br />
-            added by <Link to={`/users/${this.props.blog.user._id}`}>{this.props.blog.user.name}</Link><br />
+          <div className='blog blogInfo'><a href={this.props.blog.url}>{this.props.blog.url}</a><br />
+            <div className='ui labeled button' tabIndex='0'>
+              <div className='ui pink button' onClick={this.handleLike.bind(this)}>
+                <i className='heart icon' /> Like
+            </div>
+              <span className='ui basic left pointing label'>
+                {this.props.blog.likes} {this.props.blog.likes === 1 ? 'like' : 'likes'}
+              </span>
+            </div>
+            <div>
+              added by <Link to={`/users/${this.props.blog.user._id}`}>{this.props.blog.user.name}</Link>
+            </div>
             {!this.props.blog.user || this.props.blog.user.username === this.props.user.username ?
-              <button onClick={this.handleDelete.bind(this)}>delete</button> :
+              <div className='ui animated fade red inverted button' tabIndex='0' onClick={this.handleDelete.bind(this)}>
+                <div className='visible content'>Delete</div>
+                <div className='hidden content'>!!!</div>
+              </div> :
               null
             }
-          </p>
+          </div>
           <h3>comments</h3>
-          <ul>
+          <List>
             {this.props.blog.comments.map((c, i) =>
-              <li key={i}>{c}</li>
+              <ListItem key={i}>{`"${c}"`}</ListItem>
             )}
-          </ul>
-          <form onSubmit={this.handleCommenting.bind(this)}>
+          </List>
+          <Form onSubmit={this.handleCommenting.bind(this)}>
             <input value={this.state.comment} onChange={this.handleInput.bind(this)} type="text" />
-            <button type="submit" disabled={!this.state.comment}>add comment</button>
-          </form>
+            <Button type="submit" disabled={!this.state.comment}>add comment</Button>
+          </Form>
         </div>
       )
     }

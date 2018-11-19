@@ -1,3 +1,4 @@
+import { Button } from 'semantic-ui-react'
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -41,7 +42,7 @@ const Login = ({ username, password, handleLoginFieldChange, handleSubmit }) => 
                     </tr>
                 </tbody>
             </table>
-            <button type='submit'>Login</button>
+            <Button type='submit'>Login</Button>
         </form>
     </div>
 )

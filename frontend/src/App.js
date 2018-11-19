@@ -1,3 +1,4 @@
+import { Container, Table, Button } from 'semantic-ui-react'
 import React from 'react'
 import Blog from './components/Blog'
 import Login from './components/Login'
@@ -12,7 +13,7 @@ import { login, logout } from './reducers/sessionReducer'
 import { initStore } from './reducers/controlReducer'
 import { retrieveUsers } from './reducers/userReducer'
 import { connect } from 'react-redux'
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link, Redirect } from 'react-router-dom'
 import './index.css'
 
 class App extends React.Component {
@@ -72,7 +73,7 @@ class App extends React.Component {
 
       this.setBlogs()
       this.setUsers()
-      this.props.notificate('confirmation', `logged in as ${this.props.user.username}`)
+      this.props.notificate('positive', `logged in as ${this.props.user.username}`)
     } catch (exception) {
       console.log(exception)
       this.props.notificate('error', 'username or password invalid')
@@ -84,7 +85,7 @@ class App extends React.Component {
 
     this.props.logout()
 
-    this.props.notificate('confirmation', 'successfully logged out')
+    this.props.notificate('positive', 'successfully logged out')
   }
 
   handleException = (_, message) => {
@@ -114,53 +115,49 @@ class App extends React.Component {
     <div>
       <Link to={'/'}>blogs</Link> &nbsp;
       <Link to={'/users'}>users</Link> &nbsp;
-      {this.props.user.name} logged in <button onClick={this.handleLogout.bind(this)}>logout</button>
+      {this.props.user.name} logged in <Button onClick={this.handleLogout.bind(this)}>logout</Button>
     </div>
   )
 
   blogSection = () => (
     <div>
-      <h2>blogs</h2>
+      <h2>Blogs</h2>
       <NewBlogForm />
-      <table>
-        <thead>
-        </thead>
-        <tbody>
+      <Table>
+        <Table.Body>
           {this.props.blogs.sort(BlogHelpers.sort).map(blog =>
-            <tr key={blog.id}>
-              <td><Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link></td>
-            </tr>
+            <Table.Row key={blog.id}>
+              <Table.Cell><Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link></Table.Cell>
+            </Table.Row>
           )}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table>
     </div>
   )
 
   userSection = () => (
     <div>
-      <h2>users</h2>
-      <table>
-        <thead>
-        </thead>
-        <tbody>
-          <tr>
-            <th>name</th>
-            <th>blogs added</th>
-          </tr>
+      <h2>Users</h2>
+      <Table striped celled>
+        <Table.Body>
+          <Table.Row>
+            <Table.HeaderCell>Name</Table.HeaderCell>
+            <Table.HeaderCell>Blogs added</Table.HeaderCell>
+          </Table.Row>
           {this.props.users.map(u =>
-            <tr key={u.id}>
-              <td><Link to={`/users/${u.id}`}>{u.name}</Link></td>
-              <td>{u.blogs.length}</td>
-            </tr>
+            <Table.Row key={u.id}>
+              <Table.Cell><Link to={`/users/${u.id}`}>{u.name}</Link></Table.Cell>
+              <Table.Cell>{u.blogs.length}</Table.Cell>
+            </Table.Row>
           )}
-        </tbody>
-      </table>
+        </Table.Body>
+      </Table>
     </div>
   )
 
   render() {
     return (
-      <div>
+      <Container>
         <Router>
           <div>
             <h1>Blogs Blogs Blogs</h1>
@@ -168,31 +165,38 @@ class App extends React.Component {
             {!this.props.user && this.loginSection()}
             {this.props.user && this.navigation()}
             {this.props.user && <Route exact path="/" render={() => this.blogSection()} />}
-            {this.props.user && <Route exact path="/users" render={() => this.userSection()} />}
-            {this.props.user &&
-              <Route exact
-                path="/users/:id"
-                render={({ match }) =>
+            <Route exact
+              path="/users"
+              render={() =>
+                this.props.user ?
+                  this.userSection() :
+                  <Redirect to="/" />
+              }
+            />
+            <Route exact
+              path="/users/:id"
+              render={({ match }) =>
+                this.props.user ?
                   <User
                     user={this.resourceById('users', match.params.id)}
-                  />
-                }
-              />
-            }
-            {this.props.user &&
-              <Route exact
-                path="/blogs/:id"
-                render={({ match, history }) =>
+                  /> :
+                  <Redirect to="/" />
+              }
+            />
+            <Route exact
+              path="/blogs/:id"
+              render={({ match, history }) =>
+                this.props.user ?
                   <Blog
                     history={history}
                     blog={this.resourceById('blogs', match.params.id)}
-                  />
-                }
-              />
-            }
+                  /> :
+                  <Redirect to="/" />
+              }
+            />
           </div>
         </Router>
-      </div>
+      </Container>
     )
   }
 }

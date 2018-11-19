@@ -1,19 +1,20 @@
+import { Message } from 'semantic-ui-react'
 import React from 'react';
 import { connect } from 'react-redux'
 
 const Notification = ({ notification }) => {
     if (!notification.notificationType) {
         return (
-            <div className='notification hiddenNotification'>
+            <Message hidden>
                 .
-            </div>
+            </Message>
         )
     }
 
     return (
-        <div className={'notification ' + notification.notificationType}>
+        <Message className={notification.notificationType}>
             {notification.notification}
-        </div>
+        </Message>
     );
 };
 

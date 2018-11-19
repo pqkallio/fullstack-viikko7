@@ -23,7 +23,6 @@ class BlogService extends RestApiService {
 
   async addComment(blog, comment) {
     const updated = await super.post(`${blog.id}/comments`, { comment })
-    console.log(updated)
     return updated
   }
 }

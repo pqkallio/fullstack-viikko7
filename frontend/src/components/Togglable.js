@@ -1,3 +1,4 @@
+import { Button } from 'semantic-ui-react'
 import React, { Component } from 'react';
 import PropTypes from 'prop-types'
 
@@ -23,20 +24,20 @@ class Togglable extends Component {
     render() {
         const hideWhenVisible = { display: this.state.visible ? 'none' : '' }
         const showWhenVisible = { display: this.state.visible ? '' : 'none' }
-        
+
         if (this.props.type === 'button') {
             return (
                 <div className={this.props.className}>
                     <div style={hideWhenVisible}>
-                        <button onClick={this.toggleVisibility}>
+                        <Button onClick={this.toggleVisibility}>
                             {this.props.toggleLabel}
-                        </button>
+                        </Button>
                     </div>
                     <div style={showWhenVisible}>
                         {this.props.children}
-                        <button onClick={this.toggleVisibility}>
+                        <Button onClick={this.toggleVisibility}>
                             {this.props.untoggleLabel}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             );
