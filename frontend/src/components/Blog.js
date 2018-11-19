@@ -1,19 +1,21 @@
 import React from 'react'
 import BlogHelpers from '../utils/BlogHelpers'
-import { likeBlog, deleteBlog } from '../reducers/blogReducer'
+import { likeBlog, deleteBlog, commentBlog } from '../reducers/blogReducer'
 import { notificate } from '../reducers/notificationReducer'
-import { initStore } from '../reducers/controlReducer'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
 class Blog extends React.Component {
-  formatBlog() {
-    return BlogHelpers.formatBlogToString(this.props.blog)
+  constructor() {
+    super()
+
+    this.state = {
+      comment: ''
+    }
   }
 
-  async componentWillMount() {
-    if (this.props.storeIsInitialized) {
-      await this.props.initStore()
-    }
+  formatBlog() {
+    return BlogHelpers.formatBlogToString(this.props.blog)
   }
 
   async handleLike() {
@@ -30,11 +32,27 @@ class Blog extends React.Component {
     try {
       if (window.confirm(`delete ${this.formatBlog()}?`)) {
         this.props.deleteBlog(this.props.blog)
+        this.props.history.push('/')
         this.props.notificate('confirmation', `${this.formatBlog()} deleted`)
       }
     } catch (exception) {
       console.log(exception)
       this.props.notificate('error', `unable to delete blog ${this.formatBlog()}, please try again`)
+    }
+  }
+
+  handleInput(event) {
+    this.setState({ comment: event.target.value })
+  }
+
+  async handleCommenting(event) {
+    event.preventDefault()
+    try {
+      await this.props.commentBlog(this.props.blog, this.state.comment)
+      this.props.notificate('confirmation', `comment '${this.state.comment}' added to blog '${this.props.blog.title}'`)
+      this.setState({ comment: '' })
+    } catch (exception) {
+      this.props.notificate('error', 'error commenting on blog, please try again')
     }
   }
 
@@ -45,12 +63,22 @@ class Blog extends React.Component {
           <h2>{this.props.blog.author + ': ' + this.props.blog.title}</h2>
           <p className='blog blogInfo'><a href={this.props.blog.url}>{this.props.blog.url}</a><br />
             {this.props.blog.likes} {this.props.blog.likes === 1 ? 'like' : 'likes'} <button onClick={this.handleLike.bind(this)}>like</button><br />
-            added by {this.props.blog.user.name}<br />
+            added by <Link to={`/users/${this.props.blog.user._id}`}>{this.props.blog.user.name}</Link><br />
             {!this.props.blog.user || this.props.blog.user.username === this.props.user.username ?
-              null :
+              <button onClick={this.handleDelete.bind(this)}>delete</button> :
               null
             }
           </p>
+          <h3>comments</h3>
+          <ul>
+            {this.props.blog.comments.map((c, i) =>
+              <li key={i}>{c}</li>
+            )}
+          </ul>
+          <form onSubmit={this.handleCommenting.bind(this)}>
+            <input value={this.state.comment} onChange={this.handleInput.bind(this)} type="text" />
+            <button type="submit" disabled={!this.state.comment}>add comment</button>
+          </form>
         </div>
       )
     }
@@ -68,8 +96,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = {
   likeBlog,
   deleteBlog,
-  notificate,
-  initStore
+  commentBlog,
+  notificate
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Blog)

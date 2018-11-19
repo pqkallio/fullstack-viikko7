@@ -25,7 +25,7 @@ class NewBlogForm extends Component {
                 url: this.state.url
             }
 
-            this.props.createBlog(blog)
+            await this.props.createBlog(blog)
             this.props.notificate('confirmation', `a new blog '${blog.title}' by ${blog.author} added`)
 
             this.setState({

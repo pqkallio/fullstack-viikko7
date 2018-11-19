@@ -71,7 +71,9 @@ blogsRouter.put('/:id', async (request, response) => {
             author: body.author,
             title: body.title,
             likes: body.likes,
-            url: body.url
+            url: body.url,
+            user: body.user,
+            comments: body.comments
         }
 
         const updatedBlog = await Blog
@@ -114,6 +116,30 @@ blogsRouter.delete('/:id', async (request, response) => {
             console.log(exception)
             response.status(400).json({ error: 'malformatted id' })
         }
+    }
+})
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+    try {
+        const blog = await Blog.findById(request.params.id)
+        if (!blog) {
+            return response.status(400).json({ error: 'blog not found' })
+        }
+
+        const comment = request.body.comment
+        if (!comment) {
+            return response.status(400).json({ error: 'comment must be provided' })
+        }
+
+        blog.comments = blog.comments.concat(comment)
+        await blog.save()
+        const savedBlog = await Blog.findById(request.params.id).populate('user', { username: 1, name: 1 })
+        const formattedBlog = Blog.format(savedBlog)
+
+        response.status(201).json(formattedBlog)
+    } catch (exception) {
+        console.log(exception)
+        response.status(400).json({ error: 'malformed id' })
     }
 })
 

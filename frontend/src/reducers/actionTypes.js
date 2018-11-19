@@ -10,7 +10,8 @@ const blogActions = {
     RETRIEVE_BLOGS: 'RETRIEVE_BLOGS',
     PURGE_BLOGS: 'PURGE_BLOGS',
     SET_TOKEN: 'SET_TOKEN',
-    UNSET_TOKEN: 'UNSET_TOKEN'
+    UNSET_TOKEN: 'UNSET_TOKEN',
+    COMMENT_BLOG: 'COMMENT_BLOG'
 }
 
 const notificationActions = {
@@ -24,7 +25,8 @@ const userActions = {
 }
 
 const controlActions = {
-    INIT_STORE: 'INIT_STORE'
+    INIT_STORE: 'INIT_STORE',
+    PURGE_STORE: 'PURGE_STORE'
 }
 
 const actions = {

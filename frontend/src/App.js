@@ -7,8 +7,9 @@ import Notification from './components/Notification'
 import User from './components/User'
 import BlogHelpers from './utils/BlogHelpers'
 import { notificate } from './reducers/notificationReducer'
-import { likeBlog, retrieveBlogs, setToken } from './reducers/blogReducer'
+import { likeBlog, setToken, retrieveBlogs } from './reducers/blogReducer'
 import { login, logout } from './reducers/sessionReducer'
+import { initStore } from './reducers/controlReducer'
 import { retrieveUsers } from './reducers/userReducer'
 import { connect } from 'react-redux'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
@@ -23,12 +24,17 @@ class App extends React.Component {
     }
   }
 
-  async componentDidMount() {
+  async componentWillMount() {
     if (this.props.user) {
-      this.setBlogs()
-      this.setUsers()
+      this.props.retrieveBlogs()
+      this.props.retrieveUsers()
+      this.props.initStore()
       this.props.setToken(this.props.user.token)
     }
+  }
+
+  async componentDidMount() {
+
   }
 
   setBlogs = async () => {
@@ -73,7 +79,7 @@ class App extends React.Component {
     }
   }
 
-  handleLogout = (event) => {
+  async handleLogout(event) {
     event.preventDefault()
 
     this.props.logout()
@@ -108,7 +114,7 @@ class App extends React.Component {
     <div>
       <Link to={'/'}>blogs</Link> &nbsp;
       <Link to={'/users'}>users</Link> &nbsp;
-      {this.props.user.name} logged in <button onClick={this.handleLogout}>logout</button>
+      {this.props.user.name} logged in <button onClick={this.handleLogout.bind(this)}>logout</button>
     </div>
   )
 
@@ -176,8 +182,9 @@ class App extends React.Component {
             {this.props.user &&
               <Route exact
                 path="/blogs/:id"
-                render={({ match }) =>
+                render={({ match, history }) =>
                   <Blog
+                    history={history}
                     blog={this.resourceById('blogs', match.params.id)}
                   />
                 }
@@ -194,17 +201,19 @@ const mapStateToProps = (state) => {
   return {
     blogs: state.blogs,
     user: state.user,
-    users: state.users
+    users: state.users,
+    storeIsInitialized: state.storeIsInitialized
   }
 }
 
 const mapDispatchToProps = {
   notificate,
-  retrieveBlogs,
   likeBlog,
   login,
   logout,
   setToken,
+  initStore,
+  retrieveBlogs,
   retrieveUsers
 }
 

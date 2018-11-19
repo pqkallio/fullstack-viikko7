@@ -43,6 +43,16 @@ export const createBlog = (blog) => {
     }
 }
 
+export const commentBlog = (blog, comment) => {
+    return async (dispatch) => {
+        const updated = await blogService.addComment(blog, comment)
+        dispatch({
+            type: actionTypes.COMMENT_BLOG,
+            blog: updated
+        })
+    }
+}
+
 export const setToken = (token) => {
     return (dispatch) => {
         dispatch({
@@ -53,9 +63,10 @@ export const setToken = (token) => {
 }
 
 const blogReducer = (state = [], action) => {
+    let blogs
     switch (action.type) {
         case actionTypes.LIKE_BLOG:
-            const blogs = state.filter(b => b.id !== action.blog.id)
+            blogs = state.filter(b => b.id !== action.blog.id)
             return [...blogs, action.blog]
         case actionTypes.CREATE_BLOG:
             return [...state, action.blog]
@@ -71,6 +82,9 @@ const blogReducer = (state = [], action) => {
         case actionTypes.UNSET_TOKEN:
             blogService.setToken(null)
             return state
+        case actionTypes.COMMENT_BLOG:
+            blogs = state.filter(b => b.id !== action.blog.id)
+            return [...blogs, action.blog]
         default:
             return state
     }

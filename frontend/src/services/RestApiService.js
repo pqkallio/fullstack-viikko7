@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-class ApiService {
+class RestApiService {
     constructor(baseUrl) {
         this.baseUrl = baseUrl
         this.token = null
@@ -33,6 +33,15 @@ class ApiService {
         const response = await axios.delete(`${this.baseUrl}/${obj.id}`, this.config())
         return response.data
     }
+
+    async post(relativePath, obj, config) {
+        const response = await axios.post(
+            `${this.baseUrl}${relativePath ? '/' + relativePath : ''}`,
+            obj,
+            config ? this.config() : null
+        )
+        return response.data
+    }
 }
 
-export default ApiService
+export default RestApiService

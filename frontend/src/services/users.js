@@ -1,8 +1,8 @@
-import ApiService from './ApiService'
+import RestApiService from './RestApiService'
 
 const baseUrl = '/api/users'
 
-class UserService extends ApiService {
+class UserService extends RestApiService {
     constructor() {
         super(baseUrl)
     }
