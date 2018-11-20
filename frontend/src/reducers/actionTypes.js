@@ -37,4 +37,4 @@ const actions = {
     ...controlActions
 }
 
-export default actions;
+export default actions

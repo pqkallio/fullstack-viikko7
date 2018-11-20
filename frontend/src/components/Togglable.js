@@ -1,15 +1,8 @@
 import { Button } from 'semantic-ui-react'
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 
 class Togglable extends Component {
-    static propTypes = {
-        className: PropTypes.string,
-        type: PropTypes.string.isRequired,
-        toggleLabel: PropTypes.string.isRequired,
-        untoggleLabel: PropTypes.string
-    }
-
     constructor(props) {
         super(props)
         this.state = {
@@ -17,7 +10,7 @@ class Togglable extends Component {
         }
     }
 
-    toggleVisibility = () => {
+    toggleVisibility() {
         this.setState({ visible: !this.state.visible })
     }
 
@@ -29,22 +22,22 @@ class Togglable extends Component {
             return (
                 <div className={this.props.className}>
                     <div style={hideWhenVisible}>
-                        <Button onClick={this.toggleVisibility}>
+                        <Button onClick={this.toggleVisibility.bind(this)}>
                             {this.props.toggleLabel}
                         </Button>
                     </div>
                     <div style={showWhenVisible}>
                         {this.props.children}
-                        <Button onClick={this.toggleVisibility}>
+                        <Button onClick={this.toggleVisibility.bind(this)}>
                             {this.props.untoggleLabel}
                         </Button>
                     </div>
                 </div>
-            );
+            )
         } else if (this.props.type === 'div') {
             return (
                 <div className={this.props.className}>
-                    <div className='toggleLabel' onClick={this.toggleVisibility}>
+                    <div className='toggleLabel' onClick={this.toggleVisibility.bind(this)}>
                         {this.props.toggleLabel}
                     </div>
                     <div className='togglableContent' style={showWhenVisible}>
@@ -58,4 +51,11 @@ class Togglable extends Component {
     }
 }
 
-export default Togglable;
+Togglable.propTypes = {
+    className: PropTypes.string,
+    type: PropTypes.string.isRequired,
+    toggleLabel: PropTypes.string.isRequired,
+    untoggleLabel: PropTypes.string
+}
+
+export default Togglable

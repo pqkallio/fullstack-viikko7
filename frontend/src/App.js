@@ -34,7 +34,7 @@ class App extends React.Component {
         }
     }
 
-    setBlogs = () => {
+    setBlogs() {
         try {
             this.props.retrieveBlogs()
         } catch (exception) {
@@ -43,7 +43,7 @@ class App extends React.Component {
         }
     }
 
-    setUsers = () => {
+    setUsers() {
         try {
             this.props.retrieveUsers()
         } catch (exception) {
@@ -52,11 +52,11 @@ class App extends React.Component {
         }
     }
 
-    handleLoginFieldChange = event => {
+    handleLoginFieldChange(event) {
         this.setState({ [event.target.name]: event.target.value })
     }
 
-    handleLogin = async (event) => {
+    async handleLogin(event) {
         event.preventDefault()
 
         try {
@@ -84,72 +84,78 @@ class App extends React.Component {
         this.props.notificate('positive', 'successfully logged out')
     }
 
-    handleException = (_, message) => {
-        this.props.notificate('error', message)
+    resourceById(rGroup, rid) {
+        return this.props[rGroup].find(r => r.id === rid)
     }
 
-    resourceById = (rGroup, rid) => this.props[rGroup].find(r => r.id === rid)
+    loginSection() {
+        return (
+            <div>
+                <Togglable
+                    type='button'
+                    toggleLabel='log in'
+                    untoggleLabel='cancel'
+                >
+                    <Login
+                        username={this.state.username}
+                        password={this.state.password}
+                        handleLoginFieldChange={this.handleLoginFieldChange}
+                        handleSubmit={this.handleLogin}
+                    />
+                </Togglable>
+            </div>
+        )
+    }
 
-    loginSection = () => (
-        <div>
-            <Togglable
-                type='button'
-                toggleLabel='log in'
-                untoggleLabel='cancel'
-            >
-                <Login
-                    username={this.state.username}
-                    password={this.state.password}
-                    handleLoginFieldChange={this.handleLoginFieldChange}
-                    handleSubmit={this.handleLogin}
-                />
-            </Togglable>
-        </div>
-    )
+    navigation() {
+        return (
+            <div>
+                <Link to={'/'}>blogs</Link> &nbsp;
+                <Link to={'/users'}>users</Link> &nbsp;
+                {this.props.user.name} logged in <Button onClick={this.handleLogout.bind(this)}>logout</Button>
+            </div>
+        )
+    }
 
-    navigation = () => (
-        <div>
-            <Link to={'/'}>blogs</Link> &nbsp;
-      <Link to={'/users'}>users</Link> &nbsp;
-      {this.props.user.name} logged in <Button onClick={this.handleLogout.bind(this)}>logout</Button>
-        </div>
-    )
+    blogSection() {
+        return (
+            <div>
+                <h2>Blogs</h2>
+                <NewBlogForm />
+                <Table>
+                    <Table.Body>
+                        {this.props.blogs.sort(BlogHelpers.sort).map(blog =>
+                            <Table.Row key={blog.id}>
+                                <Table.Cell><Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link></Table.Cell>
+                            </Table.Row>
+                        )}
+                    </Table.Body>
+                </Table>
+            </div>
+        )
+    }
 
-    blogSection = () => (
-        <div>
-            <h2>Blogs</h2>
-            <NewBlogForm />
-            <Table>
-                <Table.Body>
-                    {this.props.blogs.sort(BlogHelpers.sort).map(blog =>
-                        <Table.Row key={blog.id}>
-                            <Table.Cell><Link to={`/blogs/${blog.id}`}>{blog.title} by {blog.author}</Link></Table.Cell>
+    userSection() {
+        return (
+            <div>
+                <h2>Users</h2>
+                <Table striped celled>
+                    <Table.Body>
+                        <Table.Row>
+                            <Table.HeaderCell>Name</Table.HeaderCell>
+                            <Table.HeaderCell>Blogs added</Table.HeaderCell>
                         </Table.Row>
-                    )}
-                </Table.Body>
-            </Table>
-        </div>
-    )
-
-    userSection = () => (
-        <div>
-            <h2>Users</h2>
-            <Table striped celled>
-                <Table.Body>
-                    <Table.Row>
-                        <Table.HeaderCell>Name</Table.HeaderCell>
-                        <Table.HeaderCell>Blogs added</Table.HeaderCell>
-                    </Table.Row>
-                    {this.props.users.map(u =>
-                        <Table.Row key={u.id}>
-                            <Table.Cell><Link to={`/users/${u.id}`}>{u.name}</Link></Table.Cell>
-                            <Table.Cell>{u.blogs.length}</Table.Cell>
-                        </Table.Row>
-                    )}
-                </Table.Body>
-            </Table>
-        </div>
-    )
+                        {this.props.users.map(u =>
+                            <Table.Row key={u.id}>
+                                <Table.Cell><Link to={`/users/${u.id}`}>{u.name}</Link></Table.Cell>
+                                <Table.Cell>{u.blogs.length}</Table.Cell>
+                            </Table.Row>
+                        )}
+                    </Table.Body>
+                </Table>
+            </div>
+        )
+    }
 
     render() {
         return (
@@ -217,4 +223,4 @@ const mapDispatchToProps = {
     retrieveUsers
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App)

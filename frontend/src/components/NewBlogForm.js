@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { notificate } from '../reducers/notificationReducer'
 import { createBlog } from '../reducers/blogReducer'
 import { connect } from 'react-redux'
-import Togglable from './Togglable';
+import Togglable from './Togglable'
 
 class NewBlogForm extends Component {
     constructor() {
@@ -16,12 +16,15 @@ class NewBlogForm extends Component {
         }
     }
 
-    submittingEnabled = () =>
-        this.state.title.length > 0 &&
-        this.state.author.length > 0 &&
-        this.state.url.length > 0
+    submittingEnabled() {
+        return (
+            this.state.title.length > 0 &&
+            this.state.author.length > 0 &&
+            this.state.url.length > 0
+        )
+    }
 
-    handleBlogSubmit = async (event) => {
+    async handleBlogSubmit(event) {
         event.preventDefault()
 
         try {
@@ -44,7 +47,7 @@ class NewBlogForm extends Component {
         }
     }
 
-    handleFormFieldChange = async (event) => {
+    async handleFormFieldChange(event) {
         event.preventDefault()
         await this.setState({
             [event.target.name]: event.target.value,
@@ -55,14 +58,14 @@ class NewBlogForm extends Component {
         return (
             <div>
                 <Togglable className='blog-creation-form' type='button' toggleLabel='Create new' untoggleLabel='Hide'>
-                    <Form onSubmit={this.handleBlogSubmit}>
+                    <Form onSubmit={this.handleBlogSubmit.bind(this)}>
                         <Form.Field>
                             <label>title</label>
                             <input
                                 type='text'
                                 name='title'
                                 value={this.state.title}
-                                onChange={this.handleFormFieldChange}
+                                onChange={this.handleFormFieldChange.bind(this)}
                             />
                         </Form.Field>
                         <Form.Field>
@@ -71,7 +74,7 @@ class NewBlogForm extends Component {
                                 type='text'
                                 name='author'
                                 value={this.state.author}
-                                onChange={this.handleFormFieldChange}
+                                onChange={this.handleFormFieldChange.bind(this)}
                             />
                         </Form.Field>
                         <Form.Field>
@@ -80,14 +83,14 @@ class NewBlogForm extends Component {
                                 type='text'
                                 name='url'
                                 value={this.state.url}
-                                onChange={this.handleFormFieldChange}
+                                onChange={this.handleFormFieldChange.bind(this)}
                             />
                         </Form.Field>
                         <Button type='submit' disabled={!this.submittingEnabled()}>create</Button>
                     </Form>
                 </Togglable>
             </div>
-        );
+        )
     }
 }
 
@@ -96,4 +99,4 @@ const mapDispatchToProps = {
     createBlog
 }
 
-export default connect(null, mapDispatchToProps)(NewBlogForm);
+export default connect(null, mapDispatchToProps)(NewBlogForm)
