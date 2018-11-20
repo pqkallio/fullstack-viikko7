@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { initStore } from '../reducers/controlReducer'
 import { Link } from 'react-router-dom'
@@ -16,7 +16,7 @@ class User extends Component {
                         )}
                     </ul>
                 </div>
-            );
+            )
         }
 
         return <div>Loading...</div>
@@ -24,7 +24,7 @@ class User extends Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-    let blogs = state.blogs && ownProps.user ? state.blogs.filter(b => b.user.username === ownProps.user.username) : null;
+    let blogs = state.blogs && ownProps.user ? state.blogs.filter(b => b.user.username === ownProps.user.username) : null
     return {
         users: state.users,
         blogs,
@@ -36,4 +36,4 @@ const mapDispatchToProps = {
     initStore
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(User);
+export default connect(mapStateToProps, mapDispatchToProps)(User)
