@@ -2,7 +2,8 @@ import axios from 'axios'
 
 class RestApiService {
     constructor(baseUrl) {
-        this.baseUrl = baseUrl
+        this.baseUrl = BACKEND_URL + baseUrl
+        console.log(this.baseUrl)
         this.token = null
     }
 

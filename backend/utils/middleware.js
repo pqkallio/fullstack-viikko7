@@ -1,4 +1,4 @@
-const tokenExtractor = (request, response, next) => {
+const tokenExtractor = (request, _, next) => {
     const authorization = request.get('authorization')
     let token
 
@@ -13,6 +13,15 @@ const tokenExtractor = (request, response, next) => {
     next()
 }
 
+const logger = (request, _, next) => {
+    console.log('Method:', request.method)
+    console.log('Path:  ', request.path)
+    console.log('Body:  ', request.body)
+    console.log('---')
+    next()
+}
+
 module.exports = {
-    tokenExtractor
+    tokenExtractor,
+    logger
 }

@@ -52,11 +52,11 @@ class App extends React.Component {
         }
     }
 
-    handleLoginFieldChange(event) {
+    handleLoginFieldChange = (event) => {
         this.setState({ [event.target.name]: event.target.value })
     }
 
-    async handleLogin(event) {
+    handleLogin = async (event) => {
         event.preventDefault()
 
         try {
