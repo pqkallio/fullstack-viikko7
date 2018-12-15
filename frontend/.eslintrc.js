@@ -13,7 +13,8 @@ module.exports = {
     "parserOptions": {
         "ecmaFeatures": {
             "experimentalObjectRestSpread": true,
-            "jsx": true
+            "jsx": true,
+            "arrowFunctions": true
         },
         "ecmaVersion": 2018,
         "sourceType": "module"
@@ -58,7 +59,8 @@ module.exports = {
             "error", { "before": true, "after": true }
         ],
         "no-console": 0,
-        "react/prop-types": 0
+        "react/prop-types": 0,
+        "no-undef": "off"
     },
     "settings": {
         "react": {
@@ -67,5 +69,8 @@ module.exports = {
             "version": "16.2"
         },
         "propWrapperFunctions": ["forbidExtraProps"]
+    },
+    "globals": {
+        "BACKEND_URL": false
     }
 };

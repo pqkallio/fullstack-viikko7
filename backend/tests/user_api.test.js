@@ -2,16 +2,20 @@ const supertest = require('supertest')
 const { app, server } = require('../index')
 const api = supertest(app)
 const User = require('../models/user')
-const { initialBlogs, blogsInDb, usersInDb, nonExistingId } = require('./test_helper')
+const { usersInDb } = require('./test_helper')
 
 describe('With at least one user in the database', async () => {
+    const credentials = {
+        username: 'testuser',
+        password: 'TesTPassWorD',
+    }
+
     beforeAll(async () => {
         await User.remove({})
-        
+
         const user = new User({
             name: 'Test User',
-            username: 'testuser',
-            password: 'TesTPassWorD',
+            ...credentials,
             adult: false
         })
 
@@ -25,7 +29,7 @@ describe('With at least one user in the database', async () => {
             .get('/api/users')
             .expect(200)
             .expect('Content-Type', /application\/json/)
-        
+
         expect(response.body.length).toBe(usersInDatabase.length)
         expect(response.body[0].passwordHash).not.toBeDefined()
         expect(response.body[0].blogs).toBeDefined()
@@ -46,7 +50,7 @@ describe('With at least one user in the database', async () => {
             .send(nuevoUtilizador)
             .expect(201)
             .expect('Content-Type', /application\/json/)
-        
+
         const usersPostOp = await usersInDb()
         const usernames = usersPostOp.map(user => user.username)
 
@@ -69,7 +73,7 @@ describe('With at least one user in the database', async () => {
             .send(nuevoUtilizador)
             .expect(400)
             .expect('Content-Type', /application\/json/)
-        
+
         const usersPostOp = await usersInDb()
 
         expect(usersPostOp.length).toBe(usersPreOp.length)
@@ -91,7 +95,7 @@ describe('With at least one user in the database', async () => {
             .send(nuevoUtilizador)
             .expect(400)
             .expect('Content-Type', /application\/json/)
-        
+
         const usersPostOp = await usersInDb()
         const usernames = usersPostOp.map(user => user.username)
 
@@ -115,7 +119,7 @@ describe('With at least one user in the database', async () => {
             .send(nuevoUtilizador)
             .expect(201)
             .expect('Content-Type', /application\/json/)
-        
+
         const usersPostOp = await usersInDb()
         const usernames = usersPostOp.map(user => user.username)
 
@@ -135,7 +139,7 @@ describe('With at least one user in the database', async () => {
             .send(nuevoUtilizador)
             .expect(201)
             .expect('Content-Type', /application\/json/)
-        
+
         const savedUser = await User.findOne({ username: nuevoUtilizador.username })
 
         expect(savedUser.adult).toBe(true)

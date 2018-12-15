@@ -1,9 +1,13 @@
+/* eslint-disable */
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const Webpack = require('webpack')
 
 const config = (_, argv) => {
-    const backendUrl = 'http://localhost:3001'
+    const backendUrl = argv.mode === 'development' ?
+        'http://localhost:3001' :
+        ''  // replace with production backend address when online
 
     return {
         entry: './src/index.js',
